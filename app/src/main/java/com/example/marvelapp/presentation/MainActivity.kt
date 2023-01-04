@@ -28,7 +28,13 @@ class MainActivity : AppCompatActivity() {
             bottomNavMain.setupWithNavController(navController)
 
             //todo define as rotas principais
-            appBarConfiguration = AppBarConfiguration(setOf(R.id.home, R.id.about, R.id.favorites))
+            appBarConfiguration = AppBarConfiguration(
+                setOf(
+                    R.id.charactersFragment,
+                    R.id.heroesFragment,
+                    R.id.favoritesFragment
+                )
+            )
 
             toolbarApp.setupWithNavController(navController, appBarConfiguration)
 
