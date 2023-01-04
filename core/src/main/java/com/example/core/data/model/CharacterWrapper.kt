@@ -1,4 +1,4 @@
-package com.example.core.data.network.model
+package com.example.core.data.model
 
 data class CharacterWrapper(
     val copyRight: String,
