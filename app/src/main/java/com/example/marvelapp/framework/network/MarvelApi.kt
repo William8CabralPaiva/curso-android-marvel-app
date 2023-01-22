@@ -1,6 +1,6 @@
-package com.example.core.data.network
+package com.example.marvelapp.framework.network
 
-import com.example.core.data.model.CharacterWrapper
+import com.example.core.data.response.CharacterWrapperResponse
 import retrofit2.http.GET
 import retrofit2.http.QueryMap
 
@@ -10,6 +10,6 @@ interface MarvelApi {
     suspend fun getCharacters(
         @QueryMap
         queries: Map<String, String>
-    ): CharacterWrapper
+    ): CharacterWrapperResponse
 
 }
