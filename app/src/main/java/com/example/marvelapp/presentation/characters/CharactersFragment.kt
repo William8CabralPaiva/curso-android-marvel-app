@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
 import com.example.core.domain.model.Character
 import com.example.marvelapp.databinding.FragmentCharactersBinding
@@ -21,7 +23,7 @@ class CharactersFragment : Fragment() {
 
     private var _binding: FragmentCharactersBinding? = null
     private val binding get() = _binding!!
-    private val charactersAdapter = CharactersAdapter()
+    private lateinit var charactersAdapter: CharactersAdapter
     private val viewModel: CharactersViewModel by viewModels()
 
     override fun onCreateView(
@@ -60,17 +62,28 @@ class CharactersFragment : Fragment() {
 //            )
 //        )
         lifecycleScope.launch {
-            viewModel.charactersPagingData("").collect() { pagingData ->
-                charactersAdapter.submitData(pagingData)
+            //todo colocar dependencia androidx.lifecycle:lifecycle-runtime-ktx
+            //todo com isso ira acionar apenas se o app estiver em primeiro plano, caso o app esteja em background n ira rodar
+            //evitando assim um crash
+            //caso utilize o flow
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.charactersPagingData("").collect() { pagingData ->
+                    charactersAdapter.submitData(pagingData)
+                }
             }
         }
 
     }
 
     private fun initCharacters() {
+        charactersAdapter = CharactersAdapter()
         binding.recycleCharacters.apply {
+            scrollToPosition(0)//voltar para posição inicial ao sair da pagina e voltar
             setHasFixedSize(true)
-            adapter = charactersAdapter
+            //todo setar footer pra lista loaidng no final
+            adapter = charactersAdapter.withLoadStateFooter(
+                footer = CharacterLoadStateAdapter(charactersAdapter::retry)//retentar requisição
+            )
         }
     }
 
