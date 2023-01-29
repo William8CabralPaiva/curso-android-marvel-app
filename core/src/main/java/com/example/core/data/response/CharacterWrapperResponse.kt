@@ -1,6 +1,6 @@
 package com.example.core.data.response
 
 data class CharacterWrapperResponse(
-    val copyRight: String,
+    val copyright: String,
     val data: CharacterContainerResponse
 )

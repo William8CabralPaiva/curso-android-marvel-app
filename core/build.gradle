@@ -10,6 +10,8 @@ java {
 
 dependencies {
 
+    testImplementation project(":testing")
+
     //todo com o API no lugar do implementation quem implementar o projeto core tbm vai poder acessar as bibliotecas dele
     // OkHttp
     api(platform("com.squareup.okhttp3:okhttp-bom:4.9.0"))
