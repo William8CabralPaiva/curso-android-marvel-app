@@ -15,6 +15,14 @@ apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
 
 
 android {
+    signingConfigs {
+        release {
+            storePassword 'Marvel@123'
+            keyPassword 'Marvel@123'
+            keyAlias 'marvel-app'
+            storeFile file('C:\\Users\\willi\\Desktop\\Projects\\curso-android-marvel-app\\store\\marvel_key_store.jks')
+        }
+    }
     compileSdkVersion 33
 
     defaultConfig {
@@ -32,20 +40,32 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix '.debug'
+            debuggable true
+        }
+        staging {
+            initWith debug //imita o debug
+            applicationIdSuffix '.staging'
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'proguard-rules-staging.pro'
+        }
         release {
-            minifyEnabled false
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions{
+    compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    kotlinOptions{
+    kotlinOptions {
         jvmTarget = '1.8'
         freeCompilerArgs += ["-Xopt-in=kotlin.RequiresOptIn"]
     }
-    buildFeatures{
+    buildFeatures {
         viewBinding true
     }
 }
