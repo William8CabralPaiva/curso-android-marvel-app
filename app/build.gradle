@@ -15,14 +15,6 @@ apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
 
 
 android {
-    signingConfigs {
-        release {
-            storePassword 'Marvel@123'
-            keyPassword 'Marvel@123'
-            keyAlias 'marvel-app'
-            storeFile file('C:\\Users\\willi\\Desktop\\Projects\\curso-android-marvel-app\\store\\marvel_key_store.jks')
-        }
-    }
     compileSdkVersion 33
 
     defaultConfig {
