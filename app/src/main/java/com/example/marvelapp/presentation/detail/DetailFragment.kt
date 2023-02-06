@@ -7,10 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.Glide
-import com.example.marvelapp.R
 import com.example.marvelapp.databinding.FragmentDetailBinding
+import com.example.marvelapp.framework.imageloader.ImageLoader
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DetailFragment : Fragment() {
@@ -20,7 +20,9 @@ class DetailFragment : Fragment() {
 
     private val args by navArgs<DetailFragmentArgs>()//nome da tela + args
 
-//    private lateinit var viewModel: DetailViewModel
+    //    private lateinit var viewModel: DetailViewModel
+    @Inject
+    lateinit var imageLoader: ImageLoader
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,9 +39,8 @@ class DetailFragment : Fragment() {
             //as view tem que ter o msm nome e id
             transitionName = detailViewArg.name
 
-            Glide.with(context).load(detailViewArg.imageUrl)
-                .fallback(R.drawable.ic_img_loading_error)
-                .into(this)
+
+            imageLoader.load(this, detailViewArg.imageUrl)
         }
         setSharedElementTransitionOnEnter()
     }

@@ -8,11 +8,13 @@ import com.bumptech.glide.Glide
 import com.example.core.domain.model.Character
 import com.example.marvelapp.R
 import com.example.marvelapp.databinding.ItemCharacterBinding
+import com.example.marvelapp.framework.imageloader.ImageLoader
 import com.example.marvelapp.util.OnCharacterItemClick
 
 class CharacterViewHolder(
     binding: ItemCharacterBinding,
-    private val onItemClick: OnCharacterItemClick
+    private val imageLoader: ImageLoader,
+    private val onItemClick: OnCharacterItemClick,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val textName = binding.textName
@@ -20,12 +22,12 @@ class CharacterViewHolder(
 
     fun bind(character: Character) {
         textName.text = character.name
-        imgView.transitionName = character.name // define qual vai ser a animação pelo nome do character,
+        imgView.transitionName =
+            character.name // define qual vai ser a animação pelo nome do character,
         //que foi vinculado com o pair no fragment
         //as view tem que ter o msm nome e id
 
-        Glide.with(itemView).load(character.imageUrl).fallback(R.drawable.ic_img_loading_error)
-            .into(imgView)
+        imageLoader.load(imgView, character.imageUrl)
 
         itemView.setOnClickListener {
             onItemClick.invoke(character, imgView)
@@ -35,11 +37,12 @@ class CharacterViewHolder(
     companion object {
         fun create(
             parent: ViewGroup,
+            imageLoader: ImageLoader,
             onItemClick: OnCharacterItemClick
         ): CharacterViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             val itemBinding = ItemCharacterBinding.inflate(inflater, parent, false)
-            return CharacterViewHolder(itemBinding, onItemClick)
+            return CharacterViewHolder(itemBinding,imageLoader, onItemClick)
         }
     }
 }
