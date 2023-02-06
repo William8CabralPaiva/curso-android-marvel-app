@@ -10,8 +10,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
+import com.example.core.domain.model.Character
 import com.example.marvelapp.databinding.FragmentCharactersBinding
+import com.example.marvelapp.presentation.detail.DetailViewArg
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -74,7 +78,20 @@ class CharactersFragment : Fragment() {
     }
 
     private fun initCharacters() {
-        charactersAdapter = CharactersAdapter()
+        charactersAdapter = CharactersAdapter { character: Character, view: View ->
+            val extras = FragmentNavigatorExtras(
+                view to character.name// tal view vai ter esse nome
+            )
+
+            val directions = CharactersFragmentDirections.actionCharactersFragmentToDetailFragment(
+                character.name,
+                DetailViewArg(character.name, character.imageUrl)
+            )
+
+            findNavController().navigate(directions, extras)
+        }
+
+
         binding.recycleCharacters.apply {
             scrollToPosition(0)//voltar para posição inicial ao sair da pagina e voltar
             setHasFixedSize(true)
@@ -115,6 +132,11 @@ class CharactersFragment : Fragment() {
                 stopShimmer()
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {
