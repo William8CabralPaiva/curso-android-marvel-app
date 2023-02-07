@@ -1,15 +1,15 @@
 package com.example.marvelapp.factory.response
 
-import com.example.core.data.response.CharacterContainerResponse
+import com.example.core.data.response.DataContainerResponse
 import com.example.core.data.response.CharacterResponse
-import com.example.core.data.response.CharacterWrapperResponse
+import com.example.core.data.response.DataWrapperResponse
 import com.example.core.data.response.ThumbnailResponse
 
 class DataWrapperResponseFactory {
 
-    fun create() = CharacterWrapperResponse(
+    fun create() = DataWrapperResponse(
         copyright = "",
-        data = CharacterContainerResponse(
+        data = DataContainerResponse(
             offset = 0,
             total = 2,
             results = listOf(
