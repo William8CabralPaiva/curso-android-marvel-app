@@ -2,6 +2,8 @@ package com.example.marvelapp.framework.di
 
 import com.example.core.usecase.GetCharacterUseCase
 import com.example.core.usecase.GetCharacterUseCaseImpl
+import com.example.core.usecase.GetComicsUseCase
+import com.example.core.usecase.GetComicsUseCaseImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -13,4 +15,7 @@ interface UseCaseModule {
 
     @Binds
     fun bindGetCharactersUseCase(useCase: GetCharacterUseCaseImpl): GetCharacterUseCase
+//declarar os usecase
+    @Binds
+    fun bindGetComicsUseCase(useCase: GetComicsUseCaseImpl): GetComicsUseCase
 }
