@@ -52,12 +52,17 @@ class DetailFragment : Fragment() {
 
     private fun initObservers() {
         viewModel.uiState.observe(viewLifecycleOwner) { uiState ->
-            val logResult = when (uiState) {
-                DetailViewModel.UiState.Loading -> "Loading Comics ..."
-                is DetailViewModel.UiState.Success -> uiState.comics.toString()
-                DetailViewModel.UiState.Error -> "Error when Loading Comics"
+            when (uiState) {
+                DetailViewModel.UiState.Loading -> {}
+                is DetailViewModel.UiState.Success -> {
+                    binding.recyclerParentDetail.run {
+                        setHasFixedSize(true)
+                        adapter = DetailParentAdapter(uiState.detailParentList, imageLoader)
+                    }
+                }
+                DetailViewModel.UiState.Error -> {}
             }
-            Log.d(DetailFragment::class.simpleName, logResult)
+
         }
     }
 
