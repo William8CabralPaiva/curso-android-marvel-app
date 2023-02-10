@@ -46,7 +46,7 @@ class CharactersFragment : Fragment() {
         initCharacters()
         observeInitialLoadState()
         binding.includeViewCharactersErrorState.buttonTryAgain.setOnClickListener {
-            charactersAdapter.refresh()
+            charactersAdapter.retry()
         }
 //        charactersAdapter.submitList(
 //            listOf(
