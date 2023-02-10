@@ -4,6 +4,7 @@ import com.example.core.data.repository.CharacterRepository
 import com.example.core.domain.model.Comic
 import com.example.core.domain.model.Event
 import com.example.core.usecase.base.AppCoroutinesDispatchers
+import com.example.core.usecase.base.CoroutinesDispatchers
 import com.example.core.usecase.base.ResultStatus
 import com.example.core.usecase.base.UseCase
 import kotlinx.coroutines.async
@@ -21,13 +22,13 @@ interface GetCharactersCategoryUseCase {
 
 class GetCharactersCategoryUseCaseImpl @Inject constructor(
     private val repository: CharacterRepository,
-    private val dispatchers: AppCoroutinesDispatchers
+    private val dispatchers: CoroutinesDispatchers
 ) : GetCharactersCategoryUseCase,
     UseCase<GetCharactersCategoryUseCase.GetComicsParams, Pair<List<Comic>, List<Event>>>() {
 
     override suspend fun doWork(params: GetCharactersCategoryUseCase.GetComicsParams): ResultStatus<Pair<List<Comic>, List<Event>>> {
 
-        return withContext(dispatchers.io) {
+        return withContext(dispatchers.io()) {
             //usar o io para requisição
             // o computation para trabalho pesado , converter bitmap
             //todo função de forma assincrona só da sucesso dps que passa pelas duas

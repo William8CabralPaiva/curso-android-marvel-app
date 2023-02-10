@@ -30,6 +30,8 @@ class DetailViewModel @Inject constructor(
     private fun Flow<ResultStatus<Pair<List<Comic>, List<Event>>>>.watchStatus() =
         viewModelScope.launch {
             collect {
+                //post value executa na theread principal
+                //value na thread paralela
                 _uiState.value = when (it) {
                     ResultStatus.Loading -> UiState.Loading
                     is ResultStatus.Success -> {
