@@ -2,7 +2,7 @@ package com.example.marvelapp.framework.paging
 
 import androidx.paging.PagingSource
 import com.example.core.data.repository.CharacterRemoteDataSource
-import com.example.core.data.response.CharacterWrapperResponse
+import com.example.core.data.response.DataWrapperResponse
 import com.example.core.domain.model.Character
 import com.example.marvelapp.factory.response.DataWrapperResponseFactory
 import com.example.testing.MainCoroutineRule
@@ -27,7 +27,7 @@ class CharacterPagingSourceTest {
     var mainCoroutineRule = MainCoroutineRule()
 
     @Mock
-    lateinit var remoteDataSource: CharacterRemoteDataSource<CharacterWrapperResponse>
+    lateinit var remoteDataSource: CharacterRemoteDataSource<DataWrapperResponse>
 
     private val characterFactory = CharacterFactory()
 

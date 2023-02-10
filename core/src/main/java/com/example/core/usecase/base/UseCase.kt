@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.flow
 
 abstract class UseCase<in P, R> {
 
+    //todo o garante que quem chamar o usecase pode chamar ele diretamente que automaticamente ele vai chamara  função invoke
     operator fun invoke(params: P): Flow<ResultStatus<R>> = flow {
         emit(ResultStatus.Loading)
         emit(doWork(params))
     }.catch { throwable ->
         emit(ResultStatus.Error(throwable))
     }
-
 
     protected abstract suspend fun doWork(params: P): ResultStatus<R>
 }
