@@ -3,6 +3,7 @@ package com.example.marvelapp.framework.network
 import com.example.core.data.response.CharacterResponse
 import com.example.core.data.response.ComicResponse
 import com.example.core.data.response.DataWrapperResponse
+import com.example.core.data.response.EventResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.QueryMap
@@ -20,5 +21,11 @@ interface MarvelApi {
         @Path("characterId")
         characterId: Int,
     ): DataWrapperResponse<ComicResponse>
+
+    @GET("characters/{characterId}/events")
+    suspend fun getEvents(
+        @Path("characterId")
+        characterId: Int,
+    ): DataWrapperResponse<EventResponse>
 
 }
