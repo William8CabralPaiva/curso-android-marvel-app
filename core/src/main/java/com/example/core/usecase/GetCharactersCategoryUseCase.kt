@@ -3,7 +3,6 @@ package com.example.core.usecase
 import com.example.core.data.repository.CharacterRepository
 import com.example.core.domain.model.Comic
 import com.example.core.domain.model.Event
-import com.example.core.usecase.base.AppCoroutinesDispatchers
 import com.example.core.usecase.base.CoroutinesDispatchers
 import com.example.core.usecase.base.ResultStatus
 import com.example.core.usecase.base.UseCase
@@ -14,9 +13,9 @@ import javax.inject.Inject
 
 interface GetCharactersCategoryUseCase {
 
-    operator fun invoke(params: GetComicsParams): Flow<ResultStatus<Pair<List<Comic>, List<Event>>>>
+    operator fun invoke(params: GetCategoriesParams): Flow<ResultStatus<Pair<List<Comic>, List<Event>>>>
 
-    data class GetComicsParams(val characterId: Int)
+    data class GetCategoriesParams(val characterId: Int)
 
 }
 
@@ -24,9 +23,9 @@ class GetCharactersCategoryUseCaseImpl @Inject constructor(
     private val repository: CharacterRepository,
     private val dispatchers: CoroutinesDispatchers
 ) : GetCharactersCategoryUseCase,
-    UseCase<GetCharactersCategoryUseCase.GetComicsParams, Pair<List<Comic>, List<Event>>>() {
+    UseCase<GetCharactersCategoryUseCase.GetCategoriesParams, Pair<List<Comic>, List<Event>>>() {
 
-    override suspend fun doWork(params: GetCharactersCategoryUseCase.GetComicsParams): ResultStatus<Pair<List<Comic>, List<Event>>> {
+    override suspend fun doWork(params: GetCharactersCategoryUseCase.GetCategoriesParams): ResultStatus<Pair<List<Comic>, List<Event>>> {
 
         return withContext(dispatchers.io()) {
             //usar o io para requisição
