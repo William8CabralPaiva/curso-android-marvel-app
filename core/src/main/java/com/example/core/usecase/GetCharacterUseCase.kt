@@ -26,6 +26,7 @@ class GetCharacterUseCaseImpl @Inject constructor(
     private val characterRepository: CharacterRepository
 ) : PagingUseCase<GetCharacterParams, Character>(), GetCharacterUseCase {
 
+    //flow função suspensa que devolve varios valores, possivel emitir mais de um valor
     override fun createFlowObservable(params: GetCharacterParams): Flow<PagingData<Character>> {
         //precisa criar fora para o verify conseguir ler // GetCharactersUseCaseImplTest LINHA 53
         val pagingSource = characterRepository.getCharacters(params.query)

@@ -2,9 +2,8 @@ package com.example.marvelapp.framework.paging
 
 import androidx.paging.PagingSource
 import com.example.core.data.repository.CharacterRemoteDataSource
-import com.example.core.data.response.CharacterWrapperResponse
 import com.example.core.domain.model.Character
-import com.example.marvelapp.factory.response.DataWrapperResponseFactory
+import com.example.marvelapp.factory.response.CharacterPagingFactory
 import com.example.testing.MainCoroutineRule
 import com.example.testing.model.CharacterFactory
 import com.nhaarman.mockitokotlin2.any
@@ -19,19 +18,19 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 
+@ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class CharacterPagingSourceTest {
 
-    @ExperimentalCoroutinesApi
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
     @Mock
-    lateinit var remoteDataSource: CharacterRemoteDataSource<CharacterWrapperResponse>
+    lateinit var remoteDataSource: CharacterRemoteDataSource
 
     private val characterFactory = CharacterFactory()
 
-    private val characterWrapperResponse = DataWrapperResponseFactory().create()
+    private val characterPagingFactory = CharacterPagingFactory().create()
 
     private lateinit var characterPagingSource: CharacterPagingSource
 
@@ -40,7 +39,6 @@ class CharacterPagingSourceTest {
         characterPagingSource = CharacterPagingSource(remoteDataSource, "")
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun `should return a success load result when load is called`() = runTest {
         //todo refresh load 1 posição
@@ -48,7 +46,7 @@ class CharacterPagingSourceTest {
         //prepend voltar
 
         //todo regra arrange act assert
-        whenever(remoteDataSource.fetchCharacters(any())).thenReturn(characterWrapperResponse)
+        whenever(remoteDataSource.fetchCharacters(any())).thenReturn(characterPagingFactory)
 
         val result = characterPagingSource.load(
             PagingSource.LoadParams.Refresh(
@@ -74,7 +72,6 @@ class CharacterPagingSourceTest {
 
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun `should return a error load result when load is called`() = runTest {
 

@@ -2,6 +2,7 @@ package com.example.marvelapp.framework.di
 
 import com.example.marvelapp.framework.network.interceptor.AuthorizationInterceptor
 import com.example.marvelapp.BuildConfig
+import com.example.marvelapp.framework.di.qualifier.BaseUrl
 import com.example.marvelapp.framework.network.MarvelApi
 import dagger.Module
 import dagger.Provides
@@ -32,9 +33,13 @@ object NetworkModule {
     @Provides
     fun provideRetrofit(
         okHttpClient: OkHttpClient,
-        converterFactory: GsonConverterFactory
+        converterFactory: GsonConverterFactory,
+        //todo como STRING é um tipo generico e pode exister varias no projeto o dagger hilt não sabe qual injetar
+        //por isso é necessario criar uma anotação como a da classe BaseURL, passar aqui e onde ela é implementada
+        @BaseUrl
+        baseUrl: String // para conseguir alterar nos testes
     ): MarvelApi {
-        return Retrofit.Builder().baseUrl(BuildConfig.BASE_URL).client(okHttpClient)
+        return Retrofit.Builder().baseUrl(baseUrl).client(okHttpClient)
             .addConverterFactory(converterFactory).build().create(MarvelApi::class.java)
     }
 
@@ -55,7 +60,7 @@ object NetworkModule {
     @Provides
     fun provideOkHttpClient(
         loggingInterceptor: HttpLoggingInterceptor,
-        authorizationInterceptor: AuthorizationInterceptor
+        authorizationInterceptor: AuthorizationInterceptor,
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
