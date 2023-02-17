@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
@@ -27,8 +25,26 @@ class CharactersFragment : Fragment() {
 
     private var _binding: FragmentCharactersBinding? = null
     private val binding get() = _binding!!
-    private lateinit var charactersAdapter: CharactersAdapter
     private val viewModel: CharactersViewModel by viewModels()
+
+    private val charactersAdapter by lazy {
+        CharactersAdapter(imageLoader) { character: Character, view: View ->
+            val extras = FragmentNavigatorExtras(
+                view to character.name// tal view vai ter esse nome
+            )
+
+            val directions = CharactersFragmentDirections.actionCharactersFragmentToDetailFragment(
+                character.name,
+                DetailViewArg(
+                    character.id,
+                    character.name,
+                    character.imageUrl
+                )
+            )
+
+            findNavController().navigate(directions, extras)
+        }
+    }
 
     @Inject
     lateinit var imageLoader: ImageLoader
@@ -48,61 +64,38 @@ class CharactersFragment : Fragment() {
         binding.includeViewCharactersErrorState.buttonTryAgain.setOnClickListener {
             charactersAdapter.retry()
         }
-//        charactersAdapter.submitList(
-//            listOf(
-//                Character(
-//                    "Homem Aranha",
-//                    "https://upload.wikimedia.org/wikipedia/pt/thumb/1/14/Spide-Man_Poster.jpg/250px-Spide-Man_Poster.jpg"
-//                ),
-//                Character(
-//                    "Homem Aranha",
-//                    "https://upload.wikimedia.org/wikipedia/pt/thumb/1/14/Spide-Man_Poster.jpg/250px-Spide-Man_Poster.jpg"
-//                ),
-//                Character(
-//                    "Homem Aranha",
-//                    "https://upload.wikimedia.org/wikipedia/pt/thumb/1/14/Spide-Man_Poster.jpg/250px-Spide-Man_Poster.jpg"
-//                ),
-//                Character(
-//                    "Homem Aranha",
-//                    "https://upload.wikimedia.org/wikipedia/pt/thumb/1/14/Spide-Man_Poster.jpg/250px-Spide-Man_Poster.jpg"
-//                ),
-//            )
-//        )
-        lifecycleScope.launch {
-            //todo colocar dependencia androidx.lifecycle:lifecycle-runtime-ktx
-            //todo com isso ira acionar apenas se o app estiver em primeiro plano, caso o app esteja em background n ira rodar
-            //evitando assim um crash
-            //caso utilize o flow
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.charactersPagingData("").collect() { pagingData ->
-                    charactersAdapter.submitData(pagingData)
+
+        viewModel.searchCharacter()
+        viewModel.state.observe(viewLifecycleOwner) {
+            when (it) {
+                is CharactersViewModel.UiState.SearchResult -> {
+                    charactersAdapter.submitData(
+                        viewLifecycleOwner.lifecycle,
+                        it.dataCharacter
+                    )//vincular com o ciclo de vida do fragmento
                 }
             }
         }
 
+//        lifecycleScope.launch {
+//            //todo colocar dependencia androidx.lifecycle:lifecycle-runtime-ktx
+//            //todo com isso ira acionar apenas se o app estiver em primeiro plano, caso o app esteja em background n ira rodar
+//            //evitando assim um crash
+//            //caso utilize o flow
+//            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                viewModel.charactersPagingData("").collect() { pagingData ->
+//
+//                }
+//            }
+//        }
+
     }
 
     private fun initCharacters() {
-        charactersAdapter = CharactersAdapter(imageLoader) { character: Character, view: View ->
-            val extras = FragmentNavigatorExtras(
-                view to character.name// tal view vai ter esse nome
-            )
-
-            val directions = CharactersFragmentDirections.actionCharactersFragmentToDetailFragment(
-                character.name,
-                DetailViewArg(
-                    character.id,
-                    character.name,
-                    character.imageUrl
-                )
-            )
-
-            findNavController().navigate(directions, extras)
-        }
 
 
         binding.recycleCharacters.apply {
-            scrollToPosition(0)//voltar para posição inicial ao sair da pagina e voltar
+            //scrollToPosition(0)//voltar para posição inicial ao sair da pagina e voltar
             setHasFixedSize(true)
             //todo setar footer pra lista loaidng no final
             adapter = charactersAdapter.withLoadStateFooter(

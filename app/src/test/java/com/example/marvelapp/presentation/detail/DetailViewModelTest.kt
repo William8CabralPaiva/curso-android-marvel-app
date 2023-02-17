@@ -3,6 +3,7 @@ package com.example.marvelapp.presentation.detail
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import com.example.core.domain.model.Comic
+import com.example.core.usecase.AddFavoriteUseCase
 import com.example.core.usecase.GetCharactersCategoryUseCase
 import com.example.core.usecase.base.ResultStatus
 import com.example.marvelapp.R
@@ -38,8 +39,11 @@ class DetailViewModelTest {
     @Mock
     private lateinit var getCharactersCategoryUseCase: GetCharactersCategoryUseCase
 
+    @Mock
+    private lateinit var addFavoriteUseCase: AddFavoriteUseCase
+
     @Mock//mock do livedata
-    private lateinit var uiStateObserver: Observer<DetailViewModel.UiState>
+    private lateinit var uiStateObserver: Observer<UiActionStateLiveData.UiState>
 
     private lateinit var detailViewModel: DetailViewModel
 
@@ -48,9 +52,14 @@ class DetailViewModelTest {
     private val events = listOf(EventFactory().create(EventFactory.FakeEvent.FakeEvent1))
 
     @Before
-    fun setup() = runTest {
-        detailViewModel = DetailViewModel(getCharactersCategoryUseCase)
-        detailViewModel.uiState.observeForever(uiStateObserver)
+    fun setup() {
+        detailViewModel = DetailViewModel(
+            getCharactersCategoryUseCase,
+            addFavoriteUseCase,
+            mainCoroutineRule.testDispatcherProvider
+        ).apply {
+            categories.state.observeForever(uiStateObserver)
+        }
     }
 
     @Test
@@ -67,14 +76,15 @@ class DetailViewModelTest {
                 )
 
             //Act
-            detailViewModel.getCharactersCategories(character.id)
+            detailViewModel.categories.load(character.id)
 
             //Assert
             // nao consigo verificar obj
             //todo ISA verifica o tipo   que esta sendo passado se é sucesso
-            verify(uiStateObserver).onChanged(isA<DetailViewModel.UiState.Success>())
+            verify(uiStateObserver).onChanged(isA<UiActionStateLiveData.UiState.Success>())
 
-            val uiStateSuccess = detailViewModel.uiState.value as DetailViewModel.UiState.Success
+            val uiStateSuccess =
+                detailViewModel.categories.state.value as UiActionStateLiveData.UiState.Success
             val categoriesParentList = uiStateSuccess.detailParentList
 
             assertEquals(2, categoriesParentList.size)
@@ -103,14 +113,15 @@ class DetailViewModelTest {
                 )
 
             //Act
-            detailViewModel.getCharactersCategories(character.id)
+            detailViewModel.categories.load(character.id)
 
             //Assert
             // nao consigo verificar obj
             //todo ISA verifica o tipo   que esta sendo passado se é sucesso
-            verify(uiStateObserver).onChanged(isA<DetailViewModel.UiState.Success>())
+            verify(uiStateObserver).onChanged(isA<UiActionStateLiveData.UiState.Success>())
 
-            val uiStateSuccess = detailViewModel.uiState.value as DetailViewModel.UiState.Success
+            val uiStateSuccess =
+                detailViewModel.categories.state.value as UiActionStateLiveData.UiState.Success
             val categoriesParentList = uiStateSuccess.detailParentList
 
             assertEquals(1, categoriesParentList.size)
@@ -136,14 +147,15 @@ class DetailViewModelTest {
                 )
 
             //Act
-            detailViewModel.getCharactersCategories(character.id)
+            detailViewModel.categories.load(character.id)
 
             //Assert
             // nao consigo verificar obj
             //todo ISA verifica o tipo   que esta sendo passado se é sucesso
-            verify(uiStateObserver).onChanged(isA<DetailViewModel.UiState.Success>())
+            verify(uiStateObserver).onChanged(isA<UiActionStateLiveData.UiState.Success>())
 
-            val uiStateSuccess = detailViewModel.uiState.value as DetailViewModel.UiState.Success
+            val uiStateSuccess =
+                detailViewModel.categories.state.value as UiActionStateLiveData.UiState.Success
             val categoriesParentList = uiStateSuccess.detailParentList
 
             assertEquals(1, categoriesParentList.size)
@@ -169,12 +181,12 @@ class DetailViewModelTest {
                 )
 
             //Act
-            detailViewModel.getCharactersCategories(character.id)
+            detailViewModel.categories.load(character.id)
 
             //Assert
             // nao consigo verificar obj
             //todo ISA verifica o tipo   que esta sendo passado se é sucesso
-            verify(uiStateObserver).onChanged(isA<DetailViewModel.UiState.Empty>())
+            verify(uiStateObserver).onChanged(isA<UiActionStateLiveData.UiState.Empty>())
 
         }
 
@@ -192,12 +204,12 @@ class DetailViewModelTest {
                 )
 
             //Act
-            detailViewModel.getCharactersCategories(character.id)
+            detailViewModel.categories.load(character.id)
 
             //Assert
             // nao consigo verificar obj
             //todo ISA verifica o tipo   que esta sendo passado se é sucesso
-            verify(uiStateObserver).onChanged(isA<DetailViewModel.UiState.Error>())
+            verify(uiStateObserver).onChanged(isA<UiActionStateLiveData.UiState.Error>())
 
         }
 
