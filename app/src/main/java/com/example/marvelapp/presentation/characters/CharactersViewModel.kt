@@ -14,6 +14,7 @@ import com.example.core.domain.model.Character
 import com.example.core.usecase.GetCharacterUseCase
 import com.example.core.usecase.base.CoroutinesDispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -22,6 +23,12 @@ class CharactersViewModel @Inject constructor(
     private val getCharacterUseCase: GetCharacterUseCase,
     coroutinesDispatchers: CoroutinesDispatchers
 ) : ViewModel() {
+
+    fun charactersPagingData(query: String): Flow<PagingData<Character>> {
+        return getCharacterUseCase(
+            GetCharacterUseCase.GetCharacterParams(query, getPageConfig())
+        ).cachedIn(viewModelScope)
+    }
 
     private val action = MutableLiveData<Action>()
     val state: LiveData<UiState> = action.distinctUntilChanged().switchMap { action ->

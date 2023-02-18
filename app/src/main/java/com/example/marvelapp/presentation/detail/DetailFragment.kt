@@ -47,6 +47,7 @@ class DetailFragment : Fragment() {
 
         setSharedElementTransitionOnEnter()
         observeCategoriesUiState(detailViewArg)
+        initCheckFavoriteRequest(detailViewArg.characterId)
         observeFavoriteUiState()
     }
 
@@ -106,6 +107,10 @@ class DetailFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun initCheckFavoriteRequest(characterId: Int) {
+        viewModel.favorite.checkFavorite(characterId)
     }
 
     //define tipo da animação para mover

@@ -1,5 +1,6 @@
 package com.example.marvelapp.presentation.characters
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.example.core.usecase.GetCharacterUseCase
@@ -36,6 +37,9 @@ class CharactersViewModelTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
+    @get:Rule// para funcionar o livedata
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
+
     @Mock//mockito não mocka instancia finaL, mocka apenas interface
     lateinit var getCharactersUseCase: GetCharacterUseCase
 
@@ -52,7 +56,8 @@ class CharactersViewModelTest {
 
     @Before
     fun setup() {
-        characterViewModel = CharactersViewModel(getCharactersUseCase)
+        characterViewModel =
+            CharactersViewModel(getCharactersUseCase, mainCoroutineRule.testDispatcherProvider)
     }
 
     @Test
@@ -63,7 +68,7 @@ class CharactersViewModelTest {
                 getCharactersUseCase.invoke(any())
             ).thenReturn(flowOf(pagingDataCharacters))
 
-            val result = characterViewModel.charactersPagingData("")
+            val result = characterViewModel.searchCharacter("")
 
             assertNotNull(result)
         }
@@ -73,7 +78,7 @@ class CharactersViewModelTest {
         runTest {
             whenever(getCharactersUseCase.invoke(any())).thenThrow(RuntimeException())
 
-            characterViewModel.charactersPagingData("")
+           characterViewModel.charactersPagingData("")
 
         }
     }

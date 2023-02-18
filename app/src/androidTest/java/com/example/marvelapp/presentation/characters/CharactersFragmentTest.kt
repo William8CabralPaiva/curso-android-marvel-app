@@ -6,8 +6,10 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.marvelapp.R
+import com.example.marvelapp.di.CoroutinesTestModule
 import com.example.marvelapp.extension.asJsonString
 import com.example.marvelapp.framework.di.BaseUrlModule
+import com.example.marvelapp.framework.di.CoroutinesModule
 import com.example.marvelapp.launchFragmentInHiltContainer
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -23,7 +25,10 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @HiltAndroidTest//todo precisa dessa anotação para funcionar a injeção de dependencia do hilt
-@UninstallModules(BaseUrlModule::class)////deinstalar de produção para colocar o de teste
+@UninstallModules(
+    BaseUrlModule::class,
+    CoroutinesModule::class
+)////deinstalar de produção para colocar o de teste
 class CharactersFragmentTest {
 
     @get:Rule
@@ -77,7 +82,7 @@ class CharactersFragmentTest {
     }
 
     @Test
-    fun shouldShowErrorView(){
+    fun shouldShowErrorView() {
         server.enqueue(MockResponse().setResponseCode(404))
 
         onView(

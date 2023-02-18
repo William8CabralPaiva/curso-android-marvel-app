@@ -92,8 +92,7 @@ class CharactersFragment : Fragment() {
     }
 
     private fun initCharacters() {
-
-
+        postponeEnterTransition()//fala qye em algum momento vai ter a animação transição de tela ao voltar para a tela principal
         binding.recycleCharacters.apply {
             //scrollToPosition(0)//voltar para posição inicial ao sair da pagina e voltar
             setHasFixedSize(true)
@@ -101,6 +100,12 @@ class CharactersFragment : Fragment() {
             adapter = charactersAdapter.withLoadStateFooter(
                 footer = CharacterLoadStateAdapter(charactersAdapter::retry)//retentar requisição
             )
+        //todo animação ao voltar a tela
+            viewTreeObserver.addOnPreDrawListener {
+                startPostponedEnterTransition()
+                true
+            }
+
         }
     }
 

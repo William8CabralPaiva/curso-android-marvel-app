@@ -6,6 +6,7 @@ import androidx.room.Delete
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.core.data.DBConstants
+import com.example.core.data.DBConstants.FAVORITES_COLUMN_ID
 import com.example.marvelapp.framework.db.entity.FavoriteEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -16,6 +17,9 @@ interface FavoriteDao {
     // só posso usar em operação que vai ser usada uma unica vez
     @Query("SELECT * FROM ${DBConstants.FAVORITES_TABLE}")
     fun loadFavorites(): Flow<List<FavoriteEntity>>//tem que ter @entity a enidade
+
+    @Query("SELECT * FROM ${DBConstants.FAVORITES_TABLE} WHERE $FAVORITES_COLUMN_ID = :characterId")
+    suspend fun hasFavorite(characterId: Int): FavoriteEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)//substituir se tiver id igual
     suspend fun insertFavorites(favoriteEntity: FavoriteEntity)

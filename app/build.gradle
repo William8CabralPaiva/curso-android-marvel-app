@@ -155,4 +155,6 @@ dependencies {
 
     def fragment_version = "1.5.5"
     debugImplementation "androidx.fragment:fragment-testing:$fragment_version"
+
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
 }
