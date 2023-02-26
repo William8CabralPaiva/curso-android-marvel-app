@@ -14,6 +14,10 @@ import androidx.paging.LoadState
 import com.example.core.domain.model.Character
 import com.example.marvelapp.databinding.FragmentCharactersBinding
 import com.example.marvelapp.framework.imageloader.ImageLoader
+import com.example.marvelapp.presentation.characters.adapters.CharacterLoadMoreStateAdapter
+import com.example.marvelapp.presentation.characters.adapters.CharacterRefreshAdapter
+import com.example.marvelapp.presentation.characters.adapters.CharactersAdapter
+import com.example.marvelapp.presentation.characters.adapters.CharactersRefreshViewHolder
 import com.example.marvelapp.presentation.detail.DetailViewArg
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -45,6 +49,8 @@ class CharactersFragment : Fragment() {
             findNavController().navigate(directions, extras)
         }
     }
+
+    private val headerAdapter by lazy { CharacterRefreshAdapter(charactersAdapter::retry) }
 
     @Inject
     lateinit var imageLoader: ImageLoader
@@ -97,10 +103,11 @@ class CharactersFragment : Fragment() {
             //scrollToPosition(0)//voltar para posição inicial ao sair da pagina e voltar
             setHasFixedSize(true)
             //todo setar footer pra lista loaidng no final
-            adapter = charactersAdapter.withLoadStateFooter(
-                footer = CharacterLoadStateAdapter(charactersAdapter::retry)//retentar requisição
+            adapter = charactersAdapter.withLoadStateHeaderAndFooter(
+                header = headerAdapter,
+                footer = CharacterLoadMoreStateAdapter(charactersAdapter::retry)//retentar requisição
             )
-        //todo animação ao voltar a tela
+            //todo animação ao voltar a tela
             viewTreeObserver.addOnPreDrawListener {
                 startPostponedEnterTransition()
                 true
@@ -112,18 +119,31 @@ class CharactersFragment : Fragment() {
     private fun observeInitialLoadState() {
         lifecycleScope.launch {
             charactersAdapter.loadStateFlow.collectLatest { loadState ->
-                binding.flipperCharacters.displayedChild = when (loadState.refresh) {
-                    is LoadState.Loading -> {
+                //todo take it verifica e mostra valor do resfresh
+                headerAdapter.loadState = loadState.mediator?.refresh?.takeIf {
+                    it is LoadState.Error && charactersAdapter.itemCount > 0
+                } ?: loadState.prepend
+
+                binding.flipperCharacters.displayedChild = when {
+                    loadState.mediator?.refresh is LoadState.Loading -> {
                         setShimmerVisibility(true)
                         FLIPPER_CHILD_LOADING
                     }
-                    is LoadState.NotLoading -> {
+                    //medeator banco externo
+                    loadState.mediator?.refresh is LoadState.Error && charactersAdapter.itemCount == 0 -> {
+                        setShimmerVisibility(false)
+                        FLIPPER_CHILD_ERROR
+                    }
+                    //source banco de dados local
+                    loadState.source.refresh is LoadState.NotLoading ||
+                            loadState.mediator?.refresh is LoadState.NotLoading -> {
                         setShimmerVisibility(false)
                         FLIPPER_CHILD_CHARACTERS
                     }
+
                     else -> {
                         setShimmerVisibility(false)
-                        FLIPPER_CHILD_ERROR
+                        FLIPPER_CHILD_CHARACTERS
                     }
                 }
             }
