@@ -159,4 +159,7 @@ dependencies {
     debugImplementation "androidx.fragment:fragment-testing:$fragment_version"
 
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
+
+    //todo test navigation
+    androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
 }
