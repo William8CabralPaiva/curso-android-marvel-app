@@ -14,7 +14,6 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 interface GetFavoritesUseCase {
-
     suspend operator fun invoke(params: Unit = Unit): Flow<List<Character>>
 
 }

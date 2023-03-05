@@ -171,7 +171,6 @@ class DetailViewModelTest {
             val uiStateSuccess =
                 detailViewModel.categories.state.value as UiActionStateLiveData.UiState.Success
             val categoriesParentList = uiStateSuccess.detailParentList
-
             assertEquals(1, categoriesParentList.size)
             assertEquals(
                 R.string.details_events_category,
