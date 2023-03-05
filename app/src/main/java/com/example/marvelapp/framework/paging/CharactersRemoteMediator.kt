@@ -52,7 +52,7 @@ class CharactersRemoteMediator @Inject constructor(
             )
 
             if (query.isNotEmpty()) {
-                queries["nameStartWith"] = query
+                queries["nameStartsWith"] = query
             }
 
             if (orderBy.isNotEmpty()) {

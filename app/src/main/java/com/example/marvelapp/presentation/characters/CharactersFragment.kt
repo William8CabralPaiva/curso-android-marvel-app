@@ -26,7 +26,6 @@ import com.example.marvelapp.framework.imageloader.ImageLoader
 import com.example.marvelapp.presentation.characters.adapters.CharacterLoadMoreStateAdapter
 import com.example.marvelapp.presentation.characters.adapters.CharacterRefreshAdapter
 import com.example.marvelapp.presentation.characters.adapters.CharactersAdapter
-import com.example.marvelapp.presentation.characters.adapters.CharactersRefreshViewHolder
 import com.example.marvelapp.presentation.detail.DetailViewArg
 import com.example.marvelapp.presentation.sort.SortFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,11 +34,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CharactersFragment : Fragment() {
+class CharactersFragment : Fragment(), SearchView.OnQueryTextListener,
+    MenuItem.OnActionExpandListener {
 
     private var _binding: FragmentCharactersBinding? = null
     private val binding get() = _binding!!
     private val viewModel: CharactersViewModel by viewModels()
+    private lateinit var searchView: SearchView
 
     private val charactersAdapter by lazy {
         CharactersAdapter(imageLoader) { character: Character, view: View ->
@@ -110,7 +111,22 @@ class CharactersFragment : Fragment() {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.characters_menu_items, menu)
 
+                val searchItem = menu.findItem(R.id.menu_search)
+                searchView = searchItem.actionView as SearchView
 
+                searchItem.setOnActionExpandListener(this@CharactersFragment)
+
+                if (viewModel.currentSearchQuery.isNotEmpty()) {
+                    //para manter o estado da tela, exemplo se o search estiver aberta e mudar para o tema dark, ela fecharia
+                    //com isso ela mantem aberta
+                    searchItem.expandActionView()
+                    searchView.setQuery(viewModel.currentSearchQuery, false)
+                }
+
+                searchView.run {
+                    isSubmitButtonEnabled = true
+                    setOnQueryTextListener(this@CharactersFragment)
+                }
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -226,8 +242,32 @@ class CharactersFragment : Fragment() {
         }
     }
 
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return query?.let {
+            viewModel.currentSearchQuery = it
+            viewModel.searchCharacter()
+            true
+        } ?: false
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return true
+    }
+
+    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+        return true
+    }
+
+    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+        //ação de colapsar item
+        viewModel.closeSearch()
+        viewModel.searchCharacter()
+        return true
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        searchView.setOnQueryTextListener(null)
         _binding = null
     }
 
