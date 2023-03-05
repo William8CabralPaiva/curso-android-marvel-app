@@ -25,9 +25,9 @@ class CharacterRepositoryImpl @Inject constructor(
     private val database: AppDatabase
 ) : CharacterRepository {
 
-    override fun getCharacters(query: String): PagingSource<Int, Character> {
-        return CharacterPagingSource(remoteDataSource, query)
-    }
+//    override fun getCharacters(query: String): PagingSource<Int, Character> {
+//        return CharacterPagingSource(remoteDataSource, query)
+//    }
 
     override fun getCachedCharacters(
         query: String,

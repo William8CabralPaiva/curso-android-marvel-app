@@ -43,45 +43,47 @@ class CharactersViewModelTest {
     @Mock//mockito não mocka instancia finaL, mocka apenas interface
     lateinit var getCharactersUseCase: GetCharacterUseCase
 
-    private lateinit var characterViewModel: CharactersViewModel
+    private lateinit var charactersViewModel: CharactersViewModel
 
-    private val characterFactory = CharacterFactory()
+    private val charactersFactory = CharacterFactory()
 
-    val list = listOf(
-        characterFactory.create(CharacterFactory.Hero.ThreeDMan),
-        characterFactory.create(CharacterFactory.Hero.ABomb),
+    private val pagingDataCharacters = PagingData.from(
+        listOf(
+            charactersFactory.create(CharacterFactory.Hero.ThreeDMan),
+            charactersFactory.create(CharacterFactory.Hero.ABomb)
+        )
     )
 
-    private val pagingDataCharacters = PagingData.from(list)
-
     @Before
-    fun setup() {
-        characterViewModel =
-            CharactersViewModel(getCharactersUseCase, mainCoroutineRule.testDispatcherProvider)
+    fun setUp() {
+        charactersViewModel = CharactersViewModel(
+            getCharactersUseCase,
+            mainCoroutineRule.testDispatcherProvider
+        )
     }
 
     @Test
-    fun `should validate paging data object values when calling charactersPagingData`() =
-        runTest {//runBlockingTest
-
+    fun `should validate the paging data object values when calling charactersPagingData`() =
+        runTest {
             whenever(
                 getCharactersUseCase.invoke(any())
-            ).thenReturn(flowOf(pagingDataCharacters))
+            ).thenReturn(
+                flowOf(
+                    pagingDataCharacters
+                )
+            )
 
-            val result = characterViewModel.searchCharacter("")
+            val result = charactersViewModel.charactersPagingData("")
 
-            assertNotNull(result)
+            assertNotNull(result.first())
         }
 
     @Test(expected = RuntimeException::class)
-    fun `should throw an exception when calling to the use case returns an exception`() {
+    fun `should throw an exception when the calling to the use case returns an exception`() =
         runTest {
-            whenever(getCharactersUseCase.invoke(any())).thenThrow(RuntimeException())
+            whenever(getCharactersUseCase.invoke(any()))
+                .thenThrow(RuntimeException())
 
-           characterViewModel.charactersPagingData("")
-
+            charactersViewModel.charactersPagingData("")
         }
-    }
 }
-
-
