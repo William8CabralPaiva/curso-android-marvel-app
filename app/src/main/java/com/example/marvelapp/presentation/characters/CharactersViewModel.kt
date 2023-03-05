@@ -31,11 +31,12 @@ class CharactersViewModel @Inject constructor(
     }
 
     private val action = MutableLiveData<Action>()
-    val state: LiveData<UiState> = action.distinctUntilChanged().switchMap { action ->
+    //distinctuntilchange
+    val state: LiveData<UiState> = action.switchMap { action ->
         when (action) {
-            is Action.Search -> {
+            is Action.Search, Action.Sort -> {
                 getCharacterUseCase(
-                    GetCharacterUseCase.GetCharacterParams(action.query, getPageConfig())
+                    GetCharacterUseCase.GetCharacterParams("", getPageConfig())
                 ).cachedIn(viewModelScope).map {
                     UiState.SearchResult(it)
                 }.asLiveData(coroutinesDispatchers.main())
@@ -49,11 +50,16 @@ class CharactersViewModel @Inject constructor(
         action.value = Action.Search(query)
     }
 
+    fun applySort() {
+        action.value = Action.Sort
+    }
+
     sealed class UiState {
         data class SearchResult(val dataCharacter: PagingData<Character>) : UiState()
     }
 
     sealed class Action {
         data class Search(val query: String) : Action()
+        object Sort : Action()
     }
 }

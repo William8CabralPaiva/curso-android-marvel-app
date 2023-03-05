@@ -7,12 +7,14 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
@@ -26,6 +28,7 @@ import com.example.marvelapp.presentation.characters.adapters.CharacterRefreshAd
 import com.example.marvelapp.presentation.characters.adapters.CharactersAdapter
 import com.example.marvelapp.presentation.characters.adapters.CharactersRefreshViewHolder
 import com.example.marvelapp.presentation.detail.DetailViewArg
+import com.example.marvelapp.presentation.sort.SortFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -70,6 +73,33 @@ class CharactersFragment : Fragment() {
         return binding.root
     }
 
+    private fun controlBackStack() {
+        //https://developer.android.com/guide/navigation/navigation-programmatic#returning_a_result
+        // se o sort fragment não fosse um bottomsheet dialog eu poderia usar o currentBackStackEntry
+
+        val navBackStackEntry = findNavController().getBackStackEntry(R.id.charactersFragment)
+
+        val observer = LifecycleEventObserver { _, event ->
+            val isSortingApplied =
+                navBackStackEntry.savedStateHandle.contains(SortFragment.SORTING_APPLIED_BASK_STACK_KEY)
+
+            if (event == Lifecycle.Event.ON_RESUME && isSortingApplied) {
+                viewModel.applySort()
+
+                navBackStackEntry.savedStateHandle.remove<Boolean>(SortFragment.SORTING_APPLIED_BASK_STACK_KEY)
+            }
+        }
+
+        navBackStackEntry.lifecycle.addObserver(observer)
+        viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                navBackStackEntry.lifecycle.removeObserver(observer)
+            }
+
+        })
+    }
+
     private fun setupMenu() {
         //todo new menu config
         (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
@@ -79,6 +109,8 @@ class CharactersFragment : Fragment() {
 
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.characters_menu_items, menu)
+
+
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -97,6 +129,8 @@ class CharactersFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initCharacters()
         observeInitialLoadState()
+        controlBackStack()
+
         setupMenu()
         binding.includeViewCharactersErrorState.buttonTryAgain.setOnClickListener {
             charactersAdapter.retry()
