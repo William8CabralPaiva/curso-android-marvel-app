@@ -97,7 +97,6 @@ class CharactersFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListe
                 }
             }
         }
-        viewModel.searchCharacters()
     }
 
     private fun initCharactersAdapter() {

@@ -40,6 +40,10 @@ class CharactersViewModel @Inject constructor(
             }
         }
 
+    init {
+        searchCharacters()
+    }
+
     fun charactersPagingData(query: String): Flow<PagingData<Character>> {
         return getCharactersUseCase(
             GetCharactersUseCase.GetCharactersParams(query, getPageConfig())
