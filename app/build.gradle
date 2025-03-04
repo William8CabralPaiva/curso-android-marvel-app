@@ -1,14 +1,14 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    //id 'org.jetbrains.kotlin.plugin.compose'
+    id 'org.jetbrains.kotlin.plugin.compose'
 }
 
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: "androidx.navigation.safeargs"
 apply plugin: 'kotlin-parcelize'
-apply from: '../config/detekt/detekt.gradle'
+//apply from: '../config/detekt/detekt.gradle'
 
 def apikeyPropertiesFile = rootProject.file("apikey.properties")
 def apikeyProperties = new Properties()
@@ -80,6 +80,7 @@ android {
     }
     buildFeatures {
         viewBinding true
+        compose true
     }
     namespace 'com.example.marvelapp'
 }
@@ -127,6 +128,16 @@ dependencies {
     def glide_version = "4.12.0"
     implementation "com.github.bumptech.glide:glide:$glide_version"
     kapt "com.github.bumptech.glide:compiler:$glide_version"
+
+    //Compose
+    def composeBom = platform("androidx.compose:compose-bom:2025.02.00")
+    implementation composeBom
+
+    implementation "androidx.compose.material3:material3"
+    implementation "androidx.compose.ui:ui"
+
+    implementation "androidx.compose.ui:ui-tooling-preview"
+    debugImplementation "androidx.compose.ui:ui-tooling"
 
     // Other Libs
     implementation 'com.facebook.shimmer:shimmer:0.5.0'

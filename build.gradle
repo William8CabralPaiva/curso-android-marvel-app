@@ -28,6 +28,7 @@ buildscript {
 //mudar para project para conseguir ver o arquivo detekt gerado
 plugins {
     id("io.gitlab.arturbosch.detekt").version("$detekt_version")
+    id("org.jetbrains.kotlin.plugin.compose").version("$kotlin_version")
 }
 
 
