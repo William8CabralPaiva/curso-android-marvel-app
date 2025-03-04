@@ -16,15 +16,6 @@ apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
 
 android {
 
-    signingConfigs {
-        release {
-            storeFile file('/Users/douglasmotta/AndroidStudioProjects/curso-android-marvel-app/store/marvel_app_key_store')
-            storePassword 'Marvel@123'
-            keyAlias 'marvel-app'
-            keyPassword 'Marvel@123'
-        }
-    }
-
     defaultConfig {
         applicationId "com.example.marvelapp"
         minSdkVersion 23
@@ -33,6 +24,8 @@ android {
         versionCode 1
         versionName "1.0"
 
+        //todo foi trocado o test runner para conseguir injetar a injeção de dependencia no test de implementação
+        // antes era "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunner "com.example.marvelapp.CustomTestRunner"
 
         // The following argument makes the Android Test Orchestrator run its
@@ -63,22 +56,22 @@ android {
                     'proguard-rules-staging.pro'
         }
         release {
-            signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions{
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
-    kotlinOptions{
-        jvmTarget = '17'
+    kotlinOptions {
+        jvmTarget = '21'
         freeCompilerArgs += ["-Xopt-in=kotlin.RequiresOptIn"]
     }
     buildFeatures{
         viewBinding true
+        compose true
     }
     namespace 'com.example.marvelapp'
 }
@@ -127,6 +120,16 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:$glide_version"
     kapt "com.github.bumptech.glide:compiler:$glide_version"
 
+    //Compose
+    def composeBom = platform("androidx.compose:compose-bom:2025.02.00")
+    implementation composeBom
+
+    implementation "androidx.compose.material3:material3"
+    implementation "androidx.compose.ui:ui"
+
+    implementation "androidx.compose.ui:ui-tooling-preview"
+    debugImplementation "androidx.compose.ui:ui-tooling"
+
     // Other Libs
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'androidx.datastore:datastore-preferences:1.0.0'
@@ -148,6 +151,7 @@ dependencies {
     def fragment_version = '1.5.3'
     debugImplementation "androidx.fragment:fragment-testing:$fragment_version"
 
+    // For instrumented tests.
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
 

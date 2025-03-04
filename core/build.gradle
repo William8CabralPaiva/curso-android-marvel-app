@@ -4,8 +4,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 dependencies {
@@ -20,13 +20,12 @@ dependencies {
     api "com.squareup.retrofit2:retrofit:$retrofit_version"
     api "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
-    // Gson
-    api 'com.google.code.gson:gson:2.8.6'
+    api 'com.google.code.gson:gson:2.9.0'
 
-    // Paging3 Common
-    implementation "androidx.paging:paging-common:$paging_version"
+    //paging3
+    implementation "androidx.paging:paging-common:3.1.1"
 
-    // Javax Inject
+    //javax
     implementation "javax.inject:javax.inject:1"
 
     // Coroutines core
