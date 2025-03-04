@@ -1,6 +1,7 @@
 package com.example.marvelapp.presentation.detail
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.core.usecase.AddFavoriteUseCase
 import com.example.core.usecase.CheckFavoriteUseCase
 import com.example.core.usecase.GetCharacterCategoriesUseCase
@@ -24,6 +25,7 @@ class DetailViewModel @Inject constructor(
     )
 
     val favorite = FavoriteUiActionStateLiveData(
+        viewModelScope,
         coroutinesDispatchers.main(),
         checkFavoriteUseCase,
         addFavoriteUseCase,

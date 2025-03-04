@@ -5,12 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionInflater
 import com.example.marvelapp.databinding.FragmentDetailBinding
 import com.example.marvelapp.framework.imageloader.ImageLoader
+import com.example.marvelapp.presentation.component.FavoriteButton
 import com.example.marvelapp.presentation.extensions.showShortToast
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -61,17 +67,29 @@ class DetailFragment : Fragment() {
                 is UiActionStateLiveData.UiState.Success -> {
                     binding.recyclerParentDetail.run {
                         setHasFixedSize(true)
-                        adapter = DetailParentAdapter(uiState.detailParentList, imageLoader)
+                        adapter = DetailParentAdapter(
+                            uiState.detailParentList,
+                            imageLoader,
+                            onItemClick = { imageUrl ->
+                                val directions = DetailFragmentDirections
+                                    .actionDetailFragmentToComicDetailFragment(imageUrl)
+
+                                findNavController().navigate(directions)
+
+                            }
+                        )
                     }
 
                     FLIPPER_CHILD_POSITION_DETAIL
                 }
+
                 UiActionStateLiveData.UiState.Error -> {
                     binding.includeErrorView.buttonRetry.setOnClickListener {
                         viewModel.categories.load(detailViewArg.characterId)
                     }
                     FLIPPER_CHILD_POSITION_ERROR
                 }
+
                 UiActionStateLiveData.UiState.Empty -> FLIPPER_CHILD_POSITION_EMPTY
             }
         }
@@ -81,22 +99,17 @@ class DetailFragment : Fragment() {
         viewModel.favorite.run {
             checkFavorite(detailViewArg.characterId)
 
-            binding.imageFavoriteIcon.setOnClickListener {
-                update(detailViewArg)
-            }
-
-            state.observe(viewLifecycleOwner) { uiState ->
-                binding.flipperFavorite.displayedChild = when (uiState) {
-                    FavoriteUiActionStateLiveData.UiState.Loading -> FLIPPER_FAVORITE_CHILD_POSITION_LOADING
-                    is FavoriteUiActionStateLiveData.UiState.Icon -> {
-                        binding.imageFavoriteIcon.setImageResource(uiState.icon)
-                        FLIPPER_FAVORITE_CHILD_POSITION_IMAGE
-                    }
-                    is FavoriteUiActionStateLiveData.UiState.Error -> {
-                        showShortToast(uiState.messageResId)
-                        FLIPPER_FAVORITE_CHILD_POSITION_IMAGE
-                    }
+            binding.composeViewFavorite.run {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    val state by viewModel.favorite.state.collectAsStateWithLifecycle()
+                    FavoriteButton(
+                        state = state,
+                        onClick = {
+                            update(detailViewArg)
+                        })
                 }
+
             }
         }
     }

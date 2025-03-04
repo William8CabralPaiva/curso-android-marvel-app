@@ -18,18 +18,31 @@
             android:id="@+id/action_charactersFragment_to_sortFragment"
             app:destination="@id/sortFragment" />
     </fragment>
+    <!--todo vai pegar o valor do argumento screenTitle e setar no titulo-->
     <fragment
         android:id="@+id/detailFragment"
         android:name="com.example.marvelapp.presentation.detail.DetailFragment"
         android:label="{screenTitle}"
         tools:layout="@layout/fragment_detail">
-
         <argument
             android:name="screenTitle"
             app:argType="string" />
         <argument
             android:name="detailViewArg"
             app:argType="com.example.marvelapp.presentation.detail.DetailViewArg" />
+        <action
+            android:id="@+id/action_detailFragment_to_comicDetailFragment"
+            app:destination="@id/comicDetailFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/comicDetailFragment"
+        android:name="com.example.marvelapp.presentation.comicdetail.ComicDetailFragment"
+        android:label="Comic Detail">
+        <argument
+            android:name="imageUrl"
+            app:argType="string"
+            app:nullable="false" />
     </fragment>
     <dialog
         android:id="@+id/sortFragment"

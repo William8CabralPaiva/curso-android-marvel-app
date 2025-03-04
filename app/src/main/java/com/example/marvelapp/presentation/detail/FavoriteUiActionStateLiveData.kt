@@ -6,6 +6,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataScope
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.example.core.usecase.AddFavoriteUseCase
@@ -13,9 +14,14 @@ import com.example.core.usecase.CheckFavoriteUseCase
 import com.example.core.usecase.RemoveFavoriteUseCase
 import com.example.marvelapp.R
 import com.example.marvelapp.presentation.extensions.watchStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlin.coroutines.CoroutineContext
 
 class FavoriteUiActionStateLiveData(
+    viewModelScope:CoroutineScope,
     private val coroutineContext: CoroutineContext,
     private val checkFavoriteUseCase: CheckFavoriteUseCase,
     private val addFavoriteUseCase: AddFavoriteUseCase,
@@ -26,7 +32,7 @@ class FavoriteUiActionStateLiveData(
     var currentFavoriteIcon = R.drawable.ic_favorite_unchecked
 
     private val action = MutableLiveData<Action>()
-    val state: LiveData<UiState> = action.switchMap {
+    val state: StateFlow<UiState> = action.switchMap {
         liveData(coroutineContext) {
             when (it) {
                 is Action.CheckFavorite -> {
@@ -80,7 +86,11 @@ class FavoriteUiActionStateLiveData(
                 }
             }
         }
-    }
+    }.asFlow().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UiState.Loading
+    )
 
     private suspend fun LiveDataScope<UiState>.emitFavoriteIcon() {
         emit(UiState.Icon(currentFavoriteIcon))

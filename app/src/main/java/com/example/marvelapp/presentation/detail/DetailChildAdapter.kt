@@ -10,11 +10,12 @@ import com.example.marvelapp.framework.imageloader.ImageLoader
 
 class DetailChildAdapter(
     private val detailChildList: List<DetailChildVE>,
-    private val imageLoader: ImageLoader
+    private val imageLoader: ImageLoader,
+    private val onItemClick: (imageUrl: String) -> Unit
 ) : RecyclerView.Adapter<DetailChildAdapter.DetailChildViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DetailChildViewHolder {
-        return DetailChildViewHolder.create(parent, imageLoader)
+        return DetailChildViewHolder.create(parent, imageLoader, onItemClick)
     }
 
     override fun onBindViewHolder(holder: DetailChildViewHolder, position: Int) {
@@ -25,24 +26,30 @@ class DetailChildAdapter(
 
     class DetailChildViewHolder(
         itemBinding: ItemChildDetailBinding,
-        private val imageLoader: ImageLoader
+        private val imageLoader: ImageLoader,
+        private val onItemClick: (imageUrl: String) -> Unit
     ) : RecyclerView.ViewHolder(itemBinding.root) {
 
         private val imageCategory: ImageView = itemBinding.imageItemCategory
 
         fun bind(detailChildVE: DetailChildVE) {
             imageLoader.load(imageCategory, detailChildVE.imageUrl)
+
+            itemView.setOnClickListener {
+                onItemClick.invoke(detailChildVE.imageUrl)
+            }
         }
 
         companion object {
             fun create(
                 parent: ViewGroup,
-                imageLoader: ImageLoader
+                imageLoader: ImageLoader,
+                onItemClick: (imageUrl: String) -> Unit
             ): DetailChildViewHolder {
                 val itemBinding = ItemChildDetailBinding
                     .inflate(LayoutInflater.from(parent.context), parent, false)
 
-                return DetailChildViewHolder(itemBinding, imageLoader)
+                return DetailChildViewHolder(itemBinding, imageLoader, onItemClick)
             }
         }
     }

@@ -9,11 +9,12 @@ import com.example.marvelapp.framework.imageloader.ImageLoader
 
 class DetailParentAdapter(
     private val detailParentList: List<DetailParentVE>,
-    private val imageLoader: ImageLoader
+    private val imageLoader: ImageLoader,
+    private val onItemClick: (imageUrl: String) -> Unit
 ) : RecyclerView.Adapter<DetailParentAdapter.DetailParentViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DetailParentViewHolder {
-        return DetailParentViewHolder.create(parent, imageLoader)
+        return DetailParentViewHolder.create(parent, imageLoader,onItemClick)
     }
 
     override fun onBindViewHolder(holder: DetailParentViewHolder, position: Int) {
@@ -23,8 +24,9 @@ class DetailParentAdapter(
     override fun getItemCount() = detailParentList.size
 
     class DetailParentViewHolder(
-        itemBinding: ItemParentDetailBinding,
-        private val imageLoader: ImageLoader
+        private val itemBinding: ItemParentDetailBinding,
+        private val imageLoader: ImageLoader,
+        private val onItemClick: (imageUrl: String) -> Unit
     ) : RecyclerView.ViewHolder(itemBinding.root) {
 
         private val textItemCategory: TextView = itemBinding.textItemCategory
@@ -34,19 +36,21 @@ class DetailParentAdapter(
             textItemCategory.text = itemView.context.getString(detailParentVE.categoryStringResId)
             recyclerChildDetail.run {
                 setHasFixedSize(true)
-                adapter = DetailChildAdapter(detailParentVE.detailChildList, imageLoader)
+                adapter = DetailChildAdapter(detailParentVE.detailChildList, imageLoader,onItemClick)
             }
+
         }
 
         companion object {
             fun create(
                 parent: ViewGroup,
-                imageLoader: ImageLoader
+                imageLoader: ImageLoader,
+                onItemClick: (imageUrl: String) -> Unit
             ): DetailParentViewHolder {
                 val itemBinding = ItemParentDetailBinding
                     .inflate(LayoutInflater.from(parent.context), parent, false)
 
-                return DetailParentViewHolder(itemBinding, imageLoader)
+                return DetailParentViewHolder(itemBinding, imageLoader,onItemClick)
             }
         }
     }
